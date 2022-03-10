@@ -6,9 +6,10 @@ output: html_notebook
 ```{r}
 library(readr)
 library(tidyverse)
+library(gridExtra)
 ```
 
-```{r setup, include=F}
+```{r}
 CBB = read_csv("cbb.csv")
 names(CBB)
 CBB <- CBB %>% 
@@ -37,5 +38,28 @@ CBB <- CBB %>%
   rename(Seed=SEED) %>% 
   rename(Season=YEAR)
 
+```
+
+```{r}
+#Plots for q7
+q7plot.1 = ggplot(data=CBB, aes(x=AdjustedOffensiveEfficiency, y=PowerRating)) +
+  geom_point()
+
+q8plot.2 = ggplot(data=CBB, aes(x=AdjustedDefensiveEfficiency, y=PowerRating)) +
+  geom_point()
+
+grid.arrange(q7plot.1, q8plot.2, ncol=2)
+```
+
+```{r}
+#Plot for q8
+q8plot.1 = CBB %>%
+  group_by(Conference) %>%
+  summarise(Count = n(), GamesWonAvg = mean(GamesWon)) %>%
+  arrange(desc(Count)) %>%
+  ggplot(aes(x=Conference, y=GamesWonAvg)) +
+    geom_bar(stat='identity')
+
+q8plot.1
 ```
 
