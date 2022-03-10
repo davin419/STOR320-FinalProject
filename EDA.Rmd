@@ -8,7 +8,34 @@ library(readr)
 library(tidyverse)
 ```
 
-```{r}
+```{r setup, include=F}
 CBB = read_csv("cbb.csv")
+names(CBB)
+CBB <- CBB %>% 
+  rename(School=TEAM) %>% 
+  rename(Conference=CONF) %>% 
+  rename(GamesPlayed = G) %>% 
+  rename(GamesWon = W) %>% 
+  rename(AdjustedOffensiveEfficiency=ADJOE) %>% 
+  rename(AdjustedDefensiveEfficiency=ADJDE) %>% 
+  rename(PowerRating = BARTHAG) %>% 
+  rename(EffectiveFieldGoalPercentageShot=EFG_O) %>% 
+  rename(EffectiveFieldGoalPercentageAllowed=EFG_D) %>% 
+  rename(TurnoverRate=TOR) %>% 
+  rename(StealRate=TORD) %>% 
+  rename(OffensiveReboundRate=ORB) %>% 
+  rename(OffensiveReboundRateAllowed=DRB) %>% 
+  rename(FreeThrowRate=FTR) %>%
+  rename(FreeThrowRateAllowed = FTRD) %>% 
+  rename(TwoPointShootingPercentage = "2P_O") %>% 
+  rename(TwoPointShootingPercentageAllowed='2P_D') %>% 
+  rename(ThreePointShootingPercentage='3P_O') %>% 
+  rename(ThreePointShootingPercentageAllowed='3P_D') %>% 
+  rename(AdjustedTempo=ADJ_T) %>% 
+  rename(WinsAboveBubble=WAB) %>% 
+  rename(Postseason=POSTSEASON) %>% 
+  rename(Seed=SEED) %>% 
+  rename(Season=YEAR)
+
 ```
 
