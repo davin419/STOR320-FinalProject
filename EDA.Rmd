@@ -41,6 +41,27 @@ CBB <- CBB %>%
 ```
 
 ```{r}
+
+q3<- ggplot(data=CBB) +
+  geom_point(aes(x=TurnoverRate,y=GamesWon)) +
+  geom_smooth(aes(x=TurnoverRate,y=GamesWon)) + 
+  xlab("Turnover Rate")+ylab("Games Won")
+
+q3
+```
+
+```{r}
+
+q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
+  geom_point(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  geom_smooth(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  ggtitle("Power Rating Efficiency in the ACC")+
+  xlab("Power Rating") +ylab("Average Win")
+
+q4
+```
+
+```{r}
 #Plots for q7
 q7plot.1 = ggplot(data=CBB, aes(x=AdjustedOffensiveEfficiency, y=PowerRating)) +
   geom_point()
@@ -62,4 +83,23 @@ q8plot.1 = CBB %>%
 
 q8plot.1
 ```
+```{r}
 
+q3<- ggplot(data=CBB) +
+  geom_point(aes(x=TurnoverRate,y=GamesWon)) +
+  geom_smooth(aes(x=TurnoverRate,y=GamesWon)) + 
+  xlab("Turnover Rate")+ylab("Games Won")
+
+q3
+```
+
+```{r}
+
+q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
+  geom_point(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  geom_smooth(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  ggtitle("Power Rating Efficiency in the ACC")+
+  xlab("Power Rating") +ylab("Average Win")
+
+q4
+```
