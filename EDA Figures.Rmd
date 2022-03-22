@@ -1,0 +1,105 @@
+---
+title: "EDA Figures"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(MASS)
+library(car)
+```
+
+```{r setup, include=F}
+CBB = read_csv("cbb.csv")
+names(CBB)
+CBB <- CBB %>% 
+  rename(School=TEAM) %>% 
+  rename(Conference=CONF) %>% 
+  rename(GamesPlayed = G) %>% 
+  rename(GamesWon = W) %>% 
+  rename(AdjustedOffensiveEfficiency=ADJOE) %>% 
+  rename(AdjustedDefensiveEfficiency=ADJDE) %>% 
+  rename(PowerRating = BARTHAG) %>% 
+  rename(EffectiveFieldGoalPercentageShot=EFG_O) %>% 
+  rename(EffectiveFieldGoalPercentageAllowed=EFG_D) %>% 
+  rename(TurnoverRate=TOR) %>% 
+  rename(StealRate=TORD) %>% 
+  rename(OffensiveReboundRate=ORB) %>% 
+  rename(OffensiveReboundRateAllowed=DRB) %>% 
+  rename(FreeThrowRate=FTR) %>%
+  rename(FreeThrowRateAllowed = FTRD) %>% 
+  rename(TwoPointShootingPercentage = "2P_O") %>% 
+  rename(TwoPointShootingPercentageAllowed='2P_D') %>% 
+  rename(ThreePointShootingPercentage='3P_O') %>% 
+  rename(ThreePointShootingPercentageAllowed='3P_D') %>% 
+  rename(AdjustedTempo=ADJ_T) %>% 
+  rename(WinsAboveBubble=WAB) %>% 
+  rename(Postseason=POSTSEASON) %>% 
+  rename(Seed=SEED) %>% 
+  rename(Season=YEAR)
+
+```
+
+```{r}
+CBB2 <- filter(CBB, !is.na(Postseason)) %>% 
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+CBB2$Postseason[CBB2$Postseason == "Champions"] <- 1
+CBB2$Postseason[CBB2$Postseason == "2ND"] <- 2
+CBB2$Postseason[CBB2$Postseason == "F4"] <- 3
+CBB2$Postseason[CBB2$Postseason == "E8"] <- 4
+CBB2$Postseason[CBB2$Postseason == "S16"] <- 5
+CBB2$Postseason[CBB2$Postseason == "R32"] <- 6
+CBB2$Postseason[CBB2$Postseason == "R64"] <- 7
+CBB2$Postseason[CBB2$Postseason == "R68"] <- 8
+```
+
+
+```{r}
+CBB3 = CBB2[,c(3, 4, 25, 5:24)]
+none = lm(Postseason~1, data=CBB3)
+full = lm(Postseason~., data=CBB3)
+stepAIC(none, scope=list(upper=full), direction="both", trace=FALSE)
+```
+
+```{r}
+plot(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = CBB3)
+
+CBB_bestmodel = lm(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = CBB3)
+
+abline(CBB_bestmodel)
+```
+
+```{r}
+plot(CBB_bestmodel)
+```
+
+```{r}
+CBB_conf <- CBB2[c(2,22)] 
+CBB_conf$Conference <- as.factor(CBB_conf$Conference)
+CBB_conf$Postseason <- as.numeric(CBB_conf$Postseason)
+
+boxplot(Postseason~factor(Conference), data=CBB_conf)
+
+means = tapply(CBB_conf$Postseason, CBB_conf$Conference, mean)
+points(means, col="red", pch=18)
+```
+```{r}
+anova = aov(Postseason~factor(Conference), data=CBB_conf)
+anova
+plot(anova)
+# ANOVA plot satisfies criteria
+summary(anova)
+# P-value is low -> reject the null (that all means are the same), which means that the groups are different
+```
+
+```{r, eval=F}
+# See which groups are the most different
+pairwise.t.test(CBB_conf$Postseason, CBB_conf$Conference, p.adj="none")
+```
+```{r}
+hsd = TukeyHSD(anova)
+plot(hsd)
+```
+

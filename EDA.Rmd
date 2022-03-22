@@ -1,11 +1,13 @@
 ---
-title: "R Notebook"
+title: "EDA Data Cleanup"
 output: html_notebook
 ---
 
 ```{r}
 library(readr)
 library(tidyverse)
+library(MASS)
+library(car)
 library(gridExtra)
 ```
 
@@ -38,6 +40,69 @@ CBB <- CBB %>%
   rename(Seed=SEED) %>% 
   rename(Season=YEAR)
 
+```
+
+```{r}
+q1 <- filter(CBB, !is.na(Postseason)) %>% 
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+q1$Postseason[q1$Postseason == "Champions"] <- 1
+q1$Postseason[q1$Postseason == "2ND"] <- 2
+q1$Postseason[q1$Postseason == "F4"] <- 3
+q1$Postseason[q1$Postseason == "E8"] <- 4
+q1$Postseason[q1$Postseason == "S16"] <- 5
+q1$Postseason[q1$Postseason == "R32"] <- 6
+q1$Postseason[q1$Postseason == "R64"] <- 7
+q1$Postseason[q1$Postseason == "R68"] <- 8
+```
+
+```{r}
+q1b = q1[,c(3, 4, 25, 5:24)]
+none = lm(Postseason~1, data=q1b)
+full = lm(Postseason~., data=q1b)
+stepAIC(none, scope=list(upper=full), direction="both", trace=FALSE)
+```
+
+```{r}
+plot(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = q1b)
+
+q1_model = lm(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = q1b)
+
+abline(q1_model)
+```
+
+```{r}
+plot(q1_model)
+```
+
+```{r}
+q2 <- CBB2[c(2,22)] 
+q2$Conference <- as.factor(q2$Conference)
+q2$Postseason <- as.numeric(q2$Postseason)
+
+boxplot(Postseason~factor(Conference), data=q2)
+
+means = tapply(q2$Postseason, q2$Conference, mean)
+points(means, col="red", pch=18)
+```
+
+```{r}
+q2_anova = aov(Postseason~factor(Conference), data=q2)
+q2_anova
+plot(q2_anova)
+# q2_anova plot satisfies criteria
+summary(q2_anova)
+# P-value is low -> reject the null (that all means are the same), which means that the groups are different
+```
+
+```{r, eval=F}
+# See which groups are the most different
+pairwise.t.test(q2$Postseason, q2$Conference, p.adj="none")
+```
+
+```{r}
+q2_plot = TukeyHSD(q2_anova)
+plot(q2_plot)
 ```
 
 ```{r}
@@ -131,3 +196,4 @@ q10.2 <- ggplot(data=CBB, aes(x=TwoPointShootingPercentage, y=AdjustedOffensiveE
 
 grid.arrange(q10.1, q10.2, ncol=1)
 ```
+# >>>>>>> 32a90b4d8188f3c752b6b224b5b5e8b9a8e128d0
