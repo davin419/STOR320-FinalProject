@@ -94,7 +94,7 @@ summary(anova)
 # P-value is low -> reject the null (that all means are the same), which means that the groups are different
 ```
 
-```{r}
+```{r, eval=F}
 # See which groups are the most different
 pairwise.t.test(CBB_conf$Postseason, CBB_conf$Conference, p.adj="none")
 ```
