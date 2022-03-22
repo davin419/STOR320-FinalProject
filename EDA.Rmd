@@ -6,8 +6,6 @@ output: html_notebook
 ```{r}
 library(readr)
 library(tidyverse)
-library(MASS)
-library(car)
 library(gridExtra)
 ```
 
