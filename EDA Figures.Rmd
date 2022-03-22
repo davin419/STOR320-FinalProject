@@ -1,5 +1,5 @@
 ---
-title: "EDA Data Cleanup"
+title: "EDA Figures"
 output: html_notebook
 ---
 
@@ -41,67 +41,65 @@ CBB <- CBB %>%
 
 ```
 
-
 ```{r}
-q1 <- filter(CBB, !is.na(Postseason)) %>% 
+CBB2 <- filter(CBB, !is.na(Postseason)) %>% 
   mutate(WinningPercentage = GamesWon / GamesPlayed)
 
-q1$Postseason[q1$Postseason == "Champions"] <- 1
-q1$Postseason[q1$Postseason == "2ND"] <- 2
-q1$Postseason[q1$Postseason == "F4"] <- 3
-q1$Postseason[q1$Postseason == "E8"] <- 4
-q1$Postseason[q1$Postseason == "S16"] <- 5
-q1$Postseason[q1$Postseason == "R32"] <- 6
-q1$Postseason[q1$Postseason == "R64"] <- 7
-q1$Postseason[q1$Postseason == "R68"] <- 8
+CBB2$Postseason[CBB2$Postseason == "Champions"] <- 1
+CBB2$Postseason[CBB2$Postseason == "2ND"] <- 2
+CBB2$Postseason[CBB2$Postseason == "F4"] <- 3
+CBB2$Postseason[CBB2$Postseason == "E8"] <- 4
+CBB2$Postseason[CBB2$Postseason == "S16"] <- 5
+CBB2$Postseason[CBB2$Postseason == "R32"] <- 6
+CBB2$Postseason[CBB2$Postseason == "R64"] <- 7
+CBB2$Postseason[CBB2$Postseason == "R68"] <- 8
 ```
 
 
 ```{r}
-q1b = q1[,c(3, 4, 25, 5:24)]
-none = lm(Postseason~1, data=q1b)
-full = lm(Postseason~., data=q1b)
+CBB3 = CBB2[,c(3, 4, 25, 5:24)]
+none = lm(Postseason~1, data=CBB3)
+full = lm(Postseason~., data=CBB3)
 stepAIC(none, scope=list(upper=full), direction="both", trace=FALSE)
 ```
 
 ```{r}
-plot(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = q1b)
+plot(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = CBB3)
 
-q1_model = lm(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = q1b)
+CBB_bestmodel = lm(Postseason ~ GamesPlayed + GamesWon + WinningPercentage + PowerRating + AdjustedTempo + OffensiveReboundRateAllowed + FreeThrowRate, data = CBB3)
 
-abline(q1_model)
+abline(CBB_bestmodel)
 ```
 
 ```{r}
-plot(q1_model)
+plot(CBB_bestmodel)
 ```
 
 ```{r}
-q2 <- CBB2[c(2,22)] 
-q2$Conference <- as.factor(q2$Conference)
-q2$Postseason <- as.numeric(q2$Postseason)
+CBB_conf <- CBB2[c(2,22)] 
+CBB_conf$Conference <- as.factor(CBB_conf$Conference)
+CBB_conf$Postseason <- as.numeric(CBB_conf$Postseason)
 
-boxplot(Postseason~factor(Conference), data=q2)
+boxplot(Postseason~factor(Conference), data=CBB_conf)
 
-means = tapply(q2$Postseason, q2$Conference, mean)
+means = tapply(CBB_conf$Postseason, CBB_conf$Conference, mean)
 points(means, col="red", pch=18)
 ```
 ```{r}
-q2_anova = aov(Postseason~factor(Conference), data=q2)
-q2_anova
-plot(q2_anova)
-# q2_anova plot satisfies criteria
-summary(q2_anova)
+anova = aov(Postseason~factor(Conference), data=CBB_conf)
+anova
+plot(anova)
+# ANOVA plot satisfies criteria
+summary(anova)
 # P-value is low -> reject the null (that all means are the same), which means that the groups are different
 ```
 
-```{r, eval=F}
-# See which groups are the most different
-pairwise.t.test(q2$Postseason, q2$Conference, p.adj="none")
-```
-
 ```{r}
-q2_plot = TukeyHSD(q2_anova)
-plot(q2_plot)
+# See which groups are the most different
+pairwise.t.test(CBB_conf$Postseason, CBB_conf$Conference, p.adj="none")
+```
+```{r}
+hsd = TukeyHSD(anova)
+plot(hsd)
 ```
 
