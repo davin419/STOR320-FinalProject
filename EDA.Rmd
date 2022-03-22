@@ -168,52 +168,7 @@ q8plot.1 = CBB %>%
 
 q8plot.1
 ```
-```{r}
 
-q3<- ggplot(data=CBB) +
-  geom_point(aes(x=TurnoverRate,y=GamesWon)) +
-  geom_smooth(aes(x=TurnoverRate,y=GamesWon)) + 
-  xlab("Turnover Rate")+ylab("Games Won")
-
-q3
-```
-
-```{r}
-
-q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
-  geom_point(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
-  geom_smooth(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
-  ggtitle("Power Rating Efficiency in the ACC")+
-  xlab("Power Rating") +ylab("Average Win")
-
-q4
-```
-```{r}
-q11<-ggplot(data=CBB) +
-  geom_point(aes(x=ThreePointShootingPercentage,y= GamesWon))+
-  geom_smooth(aes(x=ThreePointShootingPercentage,y= GamesWon))+
-  ggtitle("Correlation Between 3P Shooting Percentage and Games Won")+
-  xlab("3P Shooting %") +ylab("Games Won")
-q11
-```
-```{r}
-q11<-ggplot(data=CBB) +
-  geom_point(aes(x=ThreePointShootingPercentage,y= GamesWon))+
-  geom_smooth(aes(x=ThreePointShootingPercentage,y= GamesWon))+
-  ggtitle("Correlation Between 3P Shooting Percentage and Games Won")+
-  xlab("3P Shooting %") +ylab("Games Won")
-q11
-```
-
-```{r}
-q12<-ggplot(data=CBB) +
-  geom_point(aes(x=TwoPointShootingPercentageAllowed,y= FreeThrowRateAllowed))+
-  geom_smooth(aes(x=TwoPointShootingPercentageAllowed,y= FreeThrowRateAllowed))+
-  ggtitle("Correlation Between Allowed 2pt Shooting % and Free Throw Rate Allowed")+
-  xlab("2pt Shot Shooting Percentage Allowed") +ylab("Free Throw Rate Alowed")
-q12
-
-```
 
 
 ```{r}
@@ -242,4 +197,26 @@ q10.2 <- ggplot(data=CBB, aes(x=TwoPointShootingPercentage, y=AdjustedOffensiveE
 
 grid.arrange(q10.1, q10.2, ncol=1)
 ```
+
+```{r}
+q11<-ggplot(data=CBB) +
+  geom_point(aes(x=ThreePointShootingPercentage,y= GamesWon))+
+  geom_smooth(aes(x=ThreePointShootingPercentage,y= GamesWon))+
+  ggtitle("Correlation Between 3P Shooting Percentage and Games Won")+
+  xlab("3P Shooting %") +ylab("Games Won")
+q11
+```
+
+```{r}
+q12<-ggplot(data=CBB) +
+  geom_point(aes(x=TwoPointShootingPercentageAllowed,y= FreeThrowRateAllowed))+
+  geom_smooth(aes(x=TwoPointShootingPercentageAllowed,y= FreeThrowRateAllowed))+
+  ggtitle("Correlation Between Allowed 2pt Shooting % and Free Throw Rate Allowed")+
+  xlab("2pt Shot Shooting Percentage Allowed") +ylab("Free Throw Rate Alowed")
+q12
+
+```
+
+
+
 # >>>>>>> 32a90b4d8188f3c752b6b224b5b5e8b9a8e128d0
