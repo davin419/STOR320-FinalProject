@@ -126,6 +126,26 @@ q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
 q4
 ```
 
+
+
+```{r}
+q5 = ggplot(data=CBB) +
+  geom_point(aes(x=FreeThrowRate,y=GamesWon)) +
+  xlab("Free Throw Percentage")+ylab("Games Won") + geom_smooth(aes(x=FreeThrowRate,y=GamesWon))
+q5
+```
+
+
+```{r}
+q6 = ggplot(data=CBB) +
+  geom_point(aes(x=AdjustedOffensiveEfficiency,y= GamesWon / GamesPlayed)) +
+  xlab("Offensive Efficiency")+ylab("Winning Percentage") + geom_smooth(aes(x=AdjustedOffensiveEfficiency,y= GamesWon / GamesPlayed))
+q6
+```
+
+
+
+
 ```{r}
 #Plots for q7
 q7plot.1 = ggplot(data=CBB, aes(x=AdjustedOffensiveEfficiency, y=PowerRating)) +
