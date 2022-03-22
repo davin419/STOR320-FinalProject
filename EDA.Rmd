@@ -8,9 +8,10 @@ library(readr)
 library(tidyverse)
 library(MASS)
 library(car)
+library(gridExtra)
 ```
 
-```{r setup, include=F}
+```{r}
 CBB = read_csv("cbb.csv")
 names(CBB)
 CBB <- CBB %>% 
@@ -41,7 +42,6 @@ CBB <- CBB %>%
 
 ```
 
-
 ```{r}
 q1 <- filter(CBB, !is.na(Postseason)) %>% 
   mutate(WinningPercentage = GamesWon / GamesPlayed)
@@ -55,7 +55,6 @@ q1$Postseason[q1$Postseason == "R32"] <- 6
 q1$Postseason[q1$Postseason == "R64"] <- 7
 q1$Postseason[q1$Postseason == "R68"] <- 8
 ```
-
 
 ```{r}
 q1b = q1[,c(3, 4, 25, 5:24)]
@@ -86,6 +85,7 @@ boxplot(Postseason~factor(Conference), data=q2)
 means = tapply(q2$Postseason, q2$Conference, mean)
 points(means, col="red", pch=18)
 ```
+
 ```{r}
 q2_anova = aov(Postseason~factor(Conference), data=q2)
 q2_anova
@@ -105,3 +105,68 @@ q2_plot = TukeyHSD(q2_anova)
 plot(q2_plot)
 ```
 
+```{r}
+
+q3<- ggplot(data=CBB) +
+  geom_point(aes(x=TurnoverRate,y=GamesWon)) +
+  geom_smooth(aes(x=TurnoverRate,y=GamesWon)) + 
+  xlab("Turnover Rate")+ylab("Games Won")
+
+q3
+```
+
+```{r}
+
+q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
+  geom_point(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  geom_smooth(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  ggtitle("Power Rating Efficiency in the ACC")+
+  xlab("Power Rating") +ylab("Average Win")
+
+q4
+```
+
+```{r}
+#Plots for q7
+q7plot.1 = ggplot(data=CBB, aes(x=AdjustedOffensiveEfficiency, y=PowerRating)) +
+  geom_point()
+
+q8plot.2 = ggplot(data=CBB, aes(x=AdjustedDefensiveEfficiency, y=PowerRating)) +
+  geom_point()
+
+grid.arrange(q7plot.1, q8plot.2, ncol=2)
+```
+
+```{r}
+#Plot for q8
+q8plot.1 = CBB %>%
+  group_by(Conference) %>%
+  summarise(Count = n(), GamesWonAvg = mean(GamesWon)) %>%
+  arrange(desc(Count)) %>%
+  ggplot(aes(x=Conference, y=GamesWonAvg)) +
+    geom_bar(stat='identity')
+
+q8plot.1
+```
+```{r}
+
+q3<- ggplot(data=CBB) +
+  geom_point(aes(x=TurnoverRate,y=GamesWon)) +
+  geom_smooth(aes(x=TurnoverRate,y=GamesWon)) + 
+  xlab("Turnover Rate")+ylab("Games Won")
+
+q3
+```
+
+```{r}
+
+q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
+  geom_point(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  geom_smooth(aes(x=PowerRating,y= GamesWon/GamesPlayed))+
+  ggtitle("Power Rating Efficiency in the ACC")+
+  xlab("Power Rating") +ylab("Average Win")
+
+q4
+```
+
+# >>>>>>> 32a90b4d8188f3c752b6b224b5b5e8b9a8e128d0
