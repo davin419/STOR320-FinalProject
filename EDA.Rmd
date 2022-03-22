@@ -74,7 +74,7 @@ plot(q1_model)
 ```
 
 ```{r}
-q2 <- CBB2[c(2,22)] 
+q2 <- q1[c(2,22)] 
 q2$Conference <- as.factor(q2$Conference)
 q2$Postseason <- as.numeric(q2$Postseason)
 
