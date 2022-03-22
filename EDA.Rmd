@@ -103,3 +103,31 @@ q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
 
 q4
 ```
+
+
+```{r}
+#Plot for q9
+q9 <- ggplot(data=CBB, aes(x=TwoPointShootingPercentageAllowed,y=ThreePointShootingPercentageAllowed)) + 
+  geom_point()+
+  stat_regline_equation(label.y = 40, aes(label = ..rr.label..))
+
+q9
+```
+
+
+```{r}
+#Plot for q10
+q10.1 <- ggplot(data=CBB, aes(x=ThreePointShootingPercentage,y=AdjustedOffensiveEfficiency)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  stat_regline_equation(label.y = 120, aes(label = ..rr.label..))
+           
+
+q10.2 <- ggplot(data=CBB, aes(x=TwoPointShootingPercentage, y=AdjustedOffensiveEfficiency)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  stat_regline_equation(label.y = 120, aes(label = ..rr.label..))
+  
+
+grid.arrange(q10.1, q10.2, ncol=1)
+```
