@@ -215,6 +215,16 @@ q12
 
 ```
 
+Possible graph for question 4:
+Do more wins over bubble teams lead to higher seeds in March Madness?
+```{r}
+Bubblewins = ggplot(data=CBB) +
+  geom_point(aes(x=WinsAboveBubble,y=Seed, color = Conference)) +
+  xlab("Wins Above Bubble") + ylab("Seed") + geom_smooth(aes(x=WinsAboveBubble, y = Seed))
+Bubblewins
+```
+
+
 
 
 # >>>>>>> 32a90b4d8188f3c752b6b224b5b5e8b9a8e128d0
