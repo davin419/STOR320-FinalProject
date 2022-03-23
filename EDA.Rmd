@@ -8,6 +8,9 @@ library(readr)
 library(tidyverse)
 library(gridExtra)
 library(ggpubr)
+library(ggplot2)
+library(gganimate)
+library(gifski)
 ```
 
 ```{r}
@@ -142,9 +145,6 @@ q6 = ggplot(data=CBB) +
 q6
 ```
 
-
-
-
 ```{r}
 #Plots for q7
 q7plot.1 = ggplot(data=CBB, aes(x=AdjustedOffensiveEfficiency, y=PowerRating)) +
@@ -216,6 +216,7 @@ q12
 
 ```
 
+<<<<<<< Updated upstream
 Possible graph for question 4:
 Do more wins over bubble teams lead to higher seeds in March Madness?
 ```{r}
@@ -226,6 +227,21 @@ Bubblewins
 ```
 
 
+=======
+```{r}
+#Code for follow-up q3
 
+ggplot(q1, aes(x=Season, y=AdjustedOffensiveEfficiency, group=Conference, color=Conference)) +
+  geom_line() 
+  #transition_reveal(Season)
+```
+>>>>>>> Stashed changes
+
+```{r}
+mod1 = lm(AdjustedOffensiveEfficiency~Season+Conference, data=q1)
+summary(mod1)
+plot(AdjustedOffensiveEfficiency~Season+Conference, data=q1)
+abline(mod1)
+```
 
 # >>>>>>> 32a90b4d8188f3c752b6b224b5b5e8b9a8e128d0
