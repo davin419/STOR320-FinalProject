@@ -48,14 +48,14 @@ CBB <- CBB %>%
 q1 <- filter(CBB, !is.na(Postseason)) %>% 
   mutate(WinningPercentage = GamesWon / GamesPlayed)
 
-q1$Postseason[q1$Postseason == "Champions"] <- 1
-q1$Postseason[q1$Postseason == "2ND"] <- 2
-q1$Postseason[q1$Postseason == "F4"] <- 3
-q1$Postseason[q1$Postseason == "E8"] <- 4
-q1$Postseason[q1$Postseason == "S16"] <- 5
-q1$Postseason[q1$Postseason == "R32"] <- 6
-q1$Postseason[q1$Postseason == "R64"] <- 7
-q1$Postseason[q1$Postseason == "R68"] <- 8
+q1$Postseason[q1$Postseason == "Champions"] <- 8
+q1$Postseason[q1$Postseason == "2ND"] <- 7
+q1$Postseason[q1$Postseason == "F4"] <- 6
+q1$Postseason[q1$Postseason == "E8"] <- 5
+q1$Postseason[q1$Postseason == "S16"] <- 4
+q1$Postseason[q1$Postseason == "R32"] <- 3
+q1$Postseason[q1$Postseason == "R64"] <- 2
+q1$Postseason[q1$Postseason == "R68"] <- 1
 ```
 
 ```{r}
