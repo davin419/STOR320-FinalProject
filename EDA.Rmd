@@ -244,4 +244,9 @@ plot(AdjustedOffensiveEfficiency~Season+Conference, data=q1)
 abline(mod1)
 ```
 
+```{r}
+#Figures for 2nd Final Question
+
+```
+
 # >>>>>>> 32a90b4d8188f3c752b6b224b5b5e8b9a8e128d0

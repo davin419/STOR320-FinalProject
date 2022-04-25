@@ -1,0 +1,73 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(leaps)
+library(modelr)
+```
+
+```{r}
+CBB = read_csv("cbb.csv")
+CBB <- CBB %>% 
+  rename(School=TEAM) %>% 
+  rename(Conference=CONF) %>% 
+  rename(GamesPlayed = G) %>% 
+  rename(GamesWon = W) %>% 
+  rename(AdjustedOffensiveEfficiency=ADJOE) %>% 
+  rename(AdjustedDefensiveEfficiency=ADJDE) %>% 
+  rename(PowerRating = BARTHAG) %>% 
+  rename(EffectiveFieldGoalPercentageShot=EFG_O) %>% 
+  rename(EffectiveFieldGoalPercentageAllowed=EFG_D) %>% 
+  rename(TurnoverRate=TOR) %>% 
+  rename(StealRate=TORD) %>% 
+  rename(OffensiveReboundRate=ORB) %>% 
+  rename(OffensiveReboundRateAllowed=DRB) %>% 
+  rename(FreeThrowRate=FTR) %>%
+  rename(FreeThrowRateAllowed = FTRD) %>% 
+  rename(TwoPointShootingPercentage = "2P_O") %>% 
+  rename(TwoPointShootingPercentageAllowed='2P_D') %>% 
+  rename(ThreePointShootingPercentage='3P_O') %>% 
+  rename(ThreePointShootingPercentageAllowed='3P_D') %>% 
+  rename(AdjustedTempo=ADJ_T) %>% 
+  rename(WinsAboveBubble=WAB) %>% 
+  rename(Postseason=POSTSEASON) %>% 
+  rename(Seed=SEED) %>% 
+  rename(Season=YEAR)
+```
+
+```{r}
+q1 <- filter(CBB, !is.na(Postseason)) %>% 
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+q1$Postseason[q1$Postseason == "Champions"] <- 8
+q1$Postseason[q1$Postseason == "2ND"] <- 7
+q1$Postseason[q1$Postseason == "F4"] <- 6
+q1$Postseason[q1$Postseason == "E8"] <- 5
+q1$Postseason[q1$Postseason == "S16"] <- 4
+q1$Postseason[q1$Postseason == "R32"] <- 3
+q1$Postseason[q1$Postseason == "R64"] <- 2
+q1$Postseason[q1$Postseason == "R68"] <- 1
+
+q1$Postseason = as.factor(as.numeric(q1))
+```
+
+```{r}
+# Cross validation
+set.seed(440)
+q1.cv = q1.min %>% crossv_kfold(10)
+head(q1.cv)
+```
+
+```{r}
+# All subsets method
+q1.min = select(q1, c(3:23,25)) # Get rid of non-numerical variables
+
+all.mod = regsubsets(Postseason~., data=q1.min, nbest=5)
+summary(all.mod)
+```
+
