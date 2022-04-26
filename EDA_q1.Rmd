@@ -104,3 +104,8 @@ test.q1 = test.q1 %>%
       add_residuals(lm3, var="LinRes3")
 ```
 
+```{r}
+plot(lm1)
+```
+
+
