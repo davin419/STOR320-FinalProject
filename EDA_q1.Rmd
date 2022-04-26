@@ -108,4 +108,79 @@ test.q1 = test.q1 %>%
 plot(lm1)
 ```
 
+```{r}
+compare.models <- test.q1 %>% 
+  gather(27:29, key="Model", value="ModelPrediction", factor_key=T)
+
+compare.models <- compare.models %>% 
+  gather(27:29, key="Residual", value="ResidualPrediction", factor_key=T)
+```
+
+```{r}
+# Actual vs. fitted with all 3 models. The line represents a perfect fit.
+ggplot(compare.models, aes(x=Postseason, y=ModelPrediction, color=Model)) +
+  geom_point() + geom_smooth(method="lm") +
+  geom_abline(slope=1, intercept=0, size=1) +
+  xlab("Actual Postseason Status") + ylab("Fitted Postseason Status") +
+  theme_minimal()
+```
+
+```{r}
+# functions
+MAE.func <- function(actual, predict) {
+  return (mean(abs(actual-predict)))
+}
+
+mae1 = MAE.func(test.q1$Postseason, test.q1$LinMod1)
+mae2 = MAE.func(test.q1$Postseason, test.q1$LinMod2)
+mae3 = MAE.func(test.q1$Postseason, test.q1$LinMod3)
+
+compare.mae <- c(mae1, mae2, mae3)
+highest.mae <- which.max(compare.mae)
+# Highest MAE is LinMod3
+
+lowest.mae <- which.min(compare.mae)
+# Lowest MAE is LinMod1
+
+compare.mae[highest.mae] - compare.mae[lowest.mae]
+# LinMod1 has 8 predictors, LinMod2 has 4, and LinMod3 has 5. The difference between the models is so small, so the added predictors in LinMod1 probably aren't doing much. Since they're all so close, we might as well just look at LinMod2 since it has the least number of predictors
+```
+
+```{r}
+# Blue line is actual slope, red line is a perfect slope if the predictions were perfect.
+ggplot(test.q1, aes(x=Postseason, y=LinMod1)) +
+  geom_point() + geom_smooth(method="lm") +
+  xlab("Actual Postseason Status") + ylab("Fitted Postseason Status") +
+  geom_abline(slope=1, intercept=0, color="red", size=1) +
+  theme_minimal()
+```
+
+```{r}
+# Blue line is the slope of the residuals and red line is a perfect line where the residuals are 100% random. All the residuals look pretty normal.
+# Plot the residuals against every predictor 
+
+ggplot(test.q1, aes(x=OffensiveReboundRateAllowed, y=LinRes1)) +
+  geom_point() + geom_smooth(method="lm") +
+  geom_hline(yintercept=0, color="red", size=1) +
+  xlab("Offensive Rebound Rate Allowed") + ylab("Residual") +
+  theme_minimal()
+
+ggplot(test.q1, aes(x=FreeThrowRateAllowed, y=LinRes1)) +
+  geom_point() + geom_smooth(method="lm") +
+  geom_hline(yintercept=0, color="red", size=1) +
+  xlab("Free Throw Rate Allowed") + ylab("Residual") +
+  theme_minimal()
+
+ggplot(test.q1, aes(x=Seed, y=LinRes1)) +
+  geom_point() + geom_smooth(method="lm") +
+  geom_hline(yintercept=0, color="red", size=1) +
+  xlab("Seed") + ylab("Residual") +
+  theme_minimal()
+
+ggplot(test.q1, aes(x=WinningPercentage, y=LinRes1)) +
+  geom_point() + geom_smooth(method="lm") +
+  geom_hline(yintercept=0, color="red", size=1) +
+  xlab("Winning Percentage") + ylab("Residual") +
+  theme_minimal()
+```
 

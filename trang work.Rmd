@@ -1,0 +1,114 @@
+---
+title: "Exploratory Data Analysis"
+author: "STOR 320.02 Group 3"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggpubr)
+library(tidyverse)
+library(gridExtra)
+library(bestglm)
+library(MASS)
+library(leaps)
+
+# Import Data Below
+CBB <- read.csv("cbb.csv")
+CBB <- CBB %>% 
+  rename(School=TEAM) %>% 
+  rename(Conference=CONF) %>%
+  rename(GamesWon = W) %>% 
+  rename(GamesPlayed = G) %>% 
+  rename(AdjustedOffensiveEfficiency=ADJOE) %>% 
+  rename(AdjustedDefensiveEfficiency=ADJDE) %>% 
+  rename(PowerRating = BARTHAG) %>% 
+  rename(EffectiveFieldGoalPercentageShot=EFG_O) %>% 
+  rename(EffectiveFieldGoalPercentageAllowed=EFG_D) %>% 
+  rename(TurnoverRate=TOR) %>% 
+  rename(StealRate=TORD) %>% 
+  rename(OffensiveReboundRate=ORB) %>% 
+  rename(OffensiveReboundRateAllowed=DRB) %>% 
+  rename(FreeThrowRate=FTR) %>%
+  rename(FreeThrowRateAllowed = FTRD) %>% 
+  rename(TwoPointShootingPercentage = X2P_O) %>% 
+  rename(TwoPointShootingPercentageAllowed='X2P_D') %>% 
+  rename(ThreePointShootingPercentage='X3P_O') %>% 
+  rename(ThreePointShootingPercentageAllowed='X3P_D') %>% 
+  rename(AdjustedTempo=ADJ_T) %>% 
+  rename(WinsAboveBubble=WAB) %>% 
+  rename(Postseason=POSTSEASON) %>% 
+  rename(Seed=SEED) %>% 
+  rename(Season=YEAR)
+```
+
+```{r}
+CBB.1 <- CBB %>% 
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+CBB.1 <- CBB.1 %>%   
+  dplyr::select(-c(GamesPlayed, GamesWon))
+```
+
+```{r}
+followup2 <- CBB.1
+
+followup2$Postseason[followup2$Postseason == "Champions"] <- 8
+followup2$Postseason[followup2$Postseason == "2ND"] <- 7
+followup2$Postseason[followup2$Postseason == "F4"] <- 6
+followup2$Postseason[followup2$Postseason == "E8"] <- 5
+followup2$Postseason[followup2$Postseason == "S16"] <- 4
+followup2$Postseason[followup2$Postseason == "R32"] <- 3
+followup2$Postseason[followup2$Postseason == "R64"] <- 2
+followup2$Postseason[followup2$Postseason == "R68"] <- 1
+
+followup2$Postseason <- as.numeric(followup2$Postseason)
+followup2.1 = followup2[,c(3:23)]
+
+none = lm(Postseason~1, data=followup2.1)
+full = lm(Postseason~., data=followup2.1)
+stepAIC(none, scope=list(upper=full), direction="both", trace=FALSE)
+
+f1 <- ggplot(followup2.1, aes(WinningPercentage,Postseason)) + geom_point() + geom_smooth(method="lm")
+f2 <- ggplot(followup2.1, aes(log(AdjustedOffensiveEfficiency),Postseason)) + geom_point() + geom_smooth(method="lm")
+f3 <- ggplot(followup2.1, aes(AdjustedDefensiveEfficiency,Postseason)) + geom_point() + geom_smooth(method="lm")
+f4 <- ggplot(followup2.1, aes(PowerRating,Postseason)) + geom_point() + geom_smooth(method="lm")
+f5 <- ggplot(followup2.1, aes(OffensiveReboundRateAllowed,Postseason)) + geom_point() + geom_smooth(method="lm")
+f6 <- ggplot(followup2.1, aes(EffectiveFieldGoalPercentageAllowed,Postseason)) + geom_point() + geom_smooth(method="lm")
+f7 <- ggplot(followup2.1, aes(StealRate,Postseason)) + geom_point() + geom_smooth(method="lm")
+f8 <- ggplot(followup2.1, aes(WinsAboveBubble,Postseason)) + geom_point() + geom_smooth(method="lm")
+f9 <- ggplot(followup2.1, aes(ThreePointShootingPercentage,Postseason)) + geom_point() + geom_smooth(method="lm")
+f10 <- ggplot(followup2.1, aes(ThreePointShootingPercentageAllowed,Postseason)) + geom_point() + geom_smooth(method="lm")
+f2
+```
+
+
+
+
+```{r}
+grid.arrange(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10, ncol=3)
+f1
+f2
+f3
+f4
+f5
+f6
+f7
+f8
+f9
+f10
+```
+
+```{r}
+all = regsubsets(Postseason ~ WinningPercentage + AdjustedOffensiveEfficiency + 
+    AdjustedDefensiveEfficiency + PowerRating + OffensiveReboundRateAllowed + 
+    EffectiveFieldGoalPercentageAllowed + StealRate + WinsAboveBubble + 
+    ThreePointShootingPercentage + ThreePointShootingPercentageAllowed, 
+    data = followup2.1)
+summary(all)
+```
+

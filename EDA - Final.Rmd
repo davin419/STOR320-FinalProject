@@ -1,0 +1,313 @@
+---
+title: "Exploratory Data Analysis"
+author: "STOR 320.02 Group 3"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggpubr)
+library(tidyverse)
+library(gridExtra)
+library(bestglm)
+library(MASS)
+
+# Import Data Below
+CBB <- read.csv("cbb.csv")
+CBB <- CBB %>% 
+  rename(School=TEAM) %>% 
+  rename(Conference=CONF) %>%
+  rename(GamesWon = W) %>% 
+  rename(GamesPlayed = G) %>% 
+  rename(AdjustedOffensiveEfficiency=ADJOE) %>% 
+  rename(AdjustedDefensiveEfficiency=ADJDE) %>% 
+  rename(PowerRating = BARTHAG) %>% 
+  rename(EffectiveFieldGoalPercentageShot=EFG_O) %>% 
+  rename(EffectiveFieldGoalPercentageAllowed=EFG_D) %>% 
+  rename(TurnoverRate=TOR) %>% 
+  rename(StealRate=TORD) %>% 
+  rename(OffensiveReboundRate=ORB) %>% 
+  rename(OffensiveReboundRateAllowed=DRB) %>% 
+  rename(FreeThrowRate=FTR) %>%
+  rename(FreeThrowRateAllowed = FTRD) %>% 
+  rename(TwoPointShootingPercentage = X2P_O) %>% 
+  rename(TwoPointShootingPercentageAllowed='X2P_D') %>% 
+  rename(ThreePointShootingPercentage='X3P_O') %>% 
+  rename(ThreePointShootingPercentageAllowed='X3P_D') %>% 
+  rename(AdjustedTempo=ADJ_T) %>% 
+  rename(WinsAboveBubble=WAB) %>% 
+  rename(Postseason=POSTSEASON) %>% 
+  rename(Seed=SEED) %>% 
+  rename(Season=YEAR)
+```
+
+# Creator: Alex Tuz
+
+### Q1: Is 3p shooting percentage the best stat for predicting a team's wins?
+
+```{r}
+q11<-ggplot(data=CBB) +
+  geom_point(aes(x=ThreePointShootingPercentage,y= GamesWon))+
+  geom_smooth(aes(x=ThreePointShootingPercentage,y= GamesWon))+
+  ggtitle("Correlation Between 3P Shooting Percentage and Games Won")+
+  xlab("3P Shooting Percentage") +ylab("Games Won")
+q11
+```
+
+### Q2: Is a team more likely to have a lower free throw rate allowed if they have a higher 2pt shot defense rating?
+
+```{r}
+q12<-ggplot(data=CBB) +
+  geom_point(aes(x=TwoPointShootingPercentageAllowed,y= FreeThrowRateAllowed))+
+  geom_smooth(aes(x=TwoPointShootingPercentageAllowed,y= FreeThrowRateAllowed))+
+  ggtitle("Correlation Between Allowed 2pt Shooting % and Free Throw Rate Allowed")+
+  xlab("2P Shot Shooting Percentage Allowed") +ylab("Free Throw Rate Allowed")
+q12
+```
+
+# Interpreter 1: Davindra (Davin) Rammani
+
+### Q1: Could we predict the power rating of a team using Adjusted Offensive Efficiency and Adjusted Defensive Efficiency as regressors?
+
+```{r}
+q7plot.1 = ggplot(data=CBB, aes(x=AdjustedOffensiveEfficiency, y=PowerRating)) +
+  geom_point()
+
+q8plot.2 = ggplot(data=CBB, aes(x=AdjustedDefensiveEfficiency, y=PowerRating)) +
+  geom_point()
+
+grid.arrange(q7plot.1, q8plot.2, ncol=2)
+```
+
+### Q2: Could we use Power Rating and Winning Percentage to predict what conference a school is in?
+
+
+```{r}
+q8plot.1 = CBB %>%
+  group_by(Conference) %>%
+  summarise(Count = n(), GamesWonAvg = mean(GamesWon)) %>%
+  arrange(desc(Count)) %>%
+  ggplot(aes(x=Conference, y=GamesWonAvg)) +
+    geom_bar(stat='identity')
+
+q8plot.1
+```
+
+# Interpreter 2: Junchao Mao
+
+### Q1: Is Two-Point Shooting Percentage Allowed (2P_D) correlated to Three-Point Shooting Percentage Allowed (3P_D)?
+
+```{r}
+q9 <- ggplot(data=CBB, 
+  aes(x=TwoPointShootingPercentageAllowed,y=ThreePointShootingPercentageAllowed)) + 
+  geom_point()+
+  stat_regline_equation(label.y = 40, aes(label = ..rr.label..))
+
+q9
+```
+
+### Q2: Which is more correlated to Adjusted Offensive Efficiency (ADJOE) for a team,   Three-Point Shooting Percentage (3P_O) or Two-Point Shooting Percentage (2P_O)? 
+
+```{r}
+q10.1 <- ggplot(data=CBB, aes(x=ThreePointShootingPercentage,y=AdjustedOffensiveEfficiency)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  stat_regline_equation(label.y = 120, aes(label = ..rr.label..))
+           
+
+q10.2 <- ggplot(data=CBB, aes(x=TwoPointShootingPercentage, y=AdjustedOffensiveEfficiency)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  stat_regline_equation(label.y = 120, aes(label = ..rr.label..))
+  
+
+grid.arrange(q10.1, q10.2, ncol=1)
+```
+
+# Orator 1: Robert (Malin) Muckenfuss
+
+### Q1: Do higher free throw percentages correlate to more wins?
+
+```{r}
+q5 = ggplot(data=CBB) +
+  geom_point(aes(x=FreeThrowRate,y=GamesWon)) +
+  xlab("Free Throw Percentage")+ylab("Games Won") + geom_smooth(aes(x=FreeThrowRate,y=GamesWon))
+q5
+```
+
+### Q2: Does AdjustedOffensiveEfficiency have a relationship between higher winning percentages?
+
+```{r}
+q6 = ggplot(data=CBB) +
+  geom_point(aes(x=AdjustedOffensiveEfficiency,y=GamesWon/GamesPlayed)) +
+  xlab("Offensive Efficiency")+ylab("Winning Percentage") + geom_smooth(aes(x=AdjustedOffensiveEfficiency,y=GamesWon/GamesPlayed))
+q6
+```
+
+# Orator 2: Nishtha Mukherji
+
+### Q1: How does the turnover rate allowed correlate to the amount of games won for a team? 
+
+```{r}
+q3<- ggplot(data=CBB) +
+  geom_point(aes(x=TurnoverRate,y=GamesWon)) +
+  geom_smooth(aes(x=TurnoverRate,y=GamesWon)) + 
+  xlab("Turnover Rate")+ylab("Games Won")
+q3
+```
+
+### Q2: How accurate was the power rating of a team at predicting a win against a ranked ACC Division I team?
+
+```{r}
+q4<-ggplot(data=filter(CBB,Conference=="ACC")) +
+  geom_point(aes(x=PowerRating,y=GamesWon/GamesPlayed))+
+  geom_smooth(aes(x=PowerRating,y=GamesWon/GamesPlayed))+
+  ggtitle("Power Rating Efficiency in the ACC")+
+  xlab("Power Rating") +ylab("Winning Percentage")
+
+q4
+```
+
+# Deliverer: Trang Le
+
+### Q1: What variables are the best predictors for March Madness/postseason round?
+
+```{r}
+q1 <- filter(CBB, !is.na(Postseason))
+
+q1$Postseason[q1$Postseason == "Champions"] <- 1
+q1$Postseason[q1$Postseason == "2ND"] <- 2
+q1$Postseason[q1$Postseason == "F4"] <- 3
+q1$Postseason[q1$Postseason == "E8"] <- 4
+q1$Postseason[q1$Postseason == "S16"] <- 5
+q1$Postseason[q1$Postseason == "R32"] <- 6
+q1$Postseason[q1$Postseason == "R64"] <- 7
+q1$Postseason[q1$Postseason == "R68"] <- 8
+
+q1$Postseason <- as.numeric(q1$Postseason)
+
+q1b = q1[,c(3:24)]
+none = lm(Postseason~1, data=q1b)
+full = lm(Postseason~., data=q1b)
+stepAIC(none, scope=list(upper=full), direction="both", trace=FALSE)
+
+p1 <- ggplot(q1b, aes(GamesPlayed ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p2 <- ggplot(q1b, aes(GamesWon ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p3 <- ggplot(q1b, aes(AdjustedOffensiveEfficiency ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p4 <- ggplot(q1b, aes(AdjustedDefensiveEfficiency ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p5 <- ggplot(q1b, aes(PowerRating ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p6 <- ggplot(q1b, aes(WinsAboveBubble ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p7 <- ggplot(q1b, aes(OffensiveReboundRateAllowed ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p8 <- ggplot(q1b, aes(EffectiveFieldGoalPercentageAllowed ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p9 <- ggplot(q1b, aes(StealRate ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p10 <- ggplot(q1b, aes(FreeThrowRateAllowed ,Postseason)) + geom_point() + geom_smooth(method="lm")
+p11 <- ggplot(q1b, aes(AdjustedTempo ,Postseason)) + geom_point() + geom_smooth(method="lm")
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11, ncol=3)
+```
+*The following chunk is to show that a linear model is a good fit for this.*
+```{r, eval=F}
+q1_model = lm(Postseason ~ WinningPercentage + AdjustedOffensiveEfficiency + AdjustedDefensiveEfficiency + PowerRating + OffensiveReboundRateAllowed + EffectiveFieldGoalPercentageAllowed + StealRate + WinsAboveBubble + ThreePointShootingPercentage + ThreePointShootingPercentageAllowed, data = q1b)
+
+abline(q1_model)
+plot(q1_model)
+```
+
+### Q2: Is there a significant difference in postseason round status among the different conferences?
+
+```{r}
+q2 <- q1[c(2,22)] 
+q2$Conference <- as.factor(q2$Conference)
+q2$Postseason <- as.numeric(q2$Postseason)
+
+means = tapply(q2$Postseason, q2$Conference, mean)
+
+q2 %>% 
+  ggplot(aes(Conference, Postseason)) +
+  geom_boxplot() +
+  stat_summary(fun=mean, geom="point", pch=18, color="red") +
+  ggtitle("Distribution of March Madness Rounds by Conference")
+```
+
+# Follow-up Questions
+
+### New Questions Based Off Initial Investigation
+
+- Q1: What variables are most important in predicting whether they make it into March Madness (Postseason)?
+- Q2: Can we predict how far a school will go in March Madness? 
+- Q3: What conference has the most consistent adjusted offensive efficiency over the years?
+- Q4: Do more wins over bubble teams lead to higher seeds in March Madness?
+
+### Investigation of Follow-up Questions
+
+GIVE WHAT 2 QUESTIONS YOU ATTEMPTED TO INVESTIGATE FURTHER IN COMPLETE SENTENCES
+*Our group decided to investigate Q2, Q3, and Q4 in further detail.*
+
+SHOW AT LEAST 2 TABLES OR FIGURES BELOW THAT EXPLORE ANSWERS FOR THE QUESTIONS YOU ARE INVESTIGATING FURTHER.
+```{r}
+CBB.1 <- CBB %>% 
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+CBB.1 <- CBB.1 %>%   
+  dplyr::select(-c(GamesPlayed, GamesWon))
+```
+
+### Q2
+```{r}
+followup2 <- CBB.1
+
+followup2$Postseason[followup2$Postseason == "Champions"] <- 8
+followup2$Postseason[followup2$Postseason == "2ND"] <- 7
+followup2$Postseason[followup2$Postseason == "F4"] <- 6
+followup2$Postseason[followup2$Postseason == "E8"] <- 5
+followup2$Postseason[followup2$Postseason == "S16"] <- 4
+followup2$Postseason[followup2$Postseason == "R32"] <- 3
+followup2$Postseason[followup2$Postseason == "R64"] <- 2
+followup2$Postseason[followup2$Postseason == "R68"] <- 1
+
+followup2$Postseason <- as.numeric(followup2$Postseason)
+followup2.1 = followup2[,c(3:23)]
+
+none = lm(Postseason~1, data=followup2.1)
+full = lm(Postseason~., data=followup2.1)
+stepAIC(none, scope=list(upper=full), direction="both", trace=FALSE)
+
+f1 <- ggplot(followup2.1, aes(WinningPercentage,Postseason)) + geom_point() + geom_smooth(method="lm")
+f2 <- ggplot(followup2.1, aes(AdjustedOffensiveEfficiency,Postseason)) + geom_point() + geom_smooth(method="lm")
+f3 <- ggplot(followup2.1, aes(AdjustedDefensiveEfficiency,Postseason)) + geom_point() + geom_smooth(method="lm")
+f4 <- ggplot(followup2.1, aes(PowerRating,Postseason)) + geom_point() + geom_smooth(method="lm")
+f5 <- ggplot(followup2.1, aes(OffensiveReboundRateAllowed,Postseason)) + geom_point() + geom_smooth(method="lm")
+f6 <- ggplot(followup2.1, aes(EffectiveFieldGoalPercentageAllowed,Postseason)) + geom_point() + geom_smooth(method="lm")
+f7 <- ggplot(followup2.1, aes(StealRate,Postseason)) + geom_point() + geom_smooth(method="lm")
+f8 <- ggplot(followup2.1, aes(WinsAboveBubble,Postseason)) + geom_point() + geom_smooth(method="lm")
+f9 <- ggplot(followup2.1, aes(ThreePointShootingPercentage,Postseason)) + geom_point() + geom_smooth(method="lm")
+f10 <- ggplot(followup2.1, aes(ThreePointShootingPercentageAllowed,Postseason)) + geom_point() + geom_smooth(method="lm")
+
+grid.arrange(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10, ncol=3)
+```
+
+### Q3
+```{r}
+followup3 <- ggplot(CBB.1, aes(x=Season, y=AdjustedOffensiveEfficiency, group=Conference, color=Conference)) +
+  geom_line() 
+
+followup3
+```
+
+### Q4
+```{r}
+followup4 <- ggplot(data=CBB.1) +
+  geom_point(aes(x=WinsAboveBubble,y=Seed, color = Conference)) +
+  xlab("Wins Above Bubble") + ylab("Seed") + geom_smooth(aes(x=WinsAboveBubble, y = Seed))
+followup4
+```
+
+# Summary
+
+From the follow-up to the initial questions, we learned that there were many variables that could be used as a good predictor for success in a season, whether it be winning percentage or how far they make it in the postseason. From the figure made for Orator 2's Q1, we saw that the turnover rate allowed was inversely proportional to the percentage of games won, and the offensive efficiency and the three-point shooting percentage were directly proportional to the winning percentage. The graphs created for Interpreter 2's Q2 led us to believe that there was a strong relationship between three-point shooting percentage and adjusted offensive efficiency as well as the two-point shooting percentage. It also led us to believe that the power rating could not be considered as an accurate predictor. The model for  Deliverer's Q1 provided the variables that are most influential when predicting how far a team goes in the Postseason; those 11 variables are: GamesPlayed, GamesWon, AdjustedOffensiveEfficiency, AdjustedDefensiveEfficiency, PowerRating, WinsAboveBubble, OffensiveReboundRateAllowed, EffectiveFieldGoalPercentageAllowed, StealRate, FreeThrowRateAllowed, and AdjustedTempo. This model inspired us to concentrate our project on how to help people make predictions for March Madness (the Postseason). 
+
+Our follow-up questions were more focused on March Madness and predicting how a team would do. First, we decided to get rid of Games Won and Games Played as response variables and instead made a Winning Percentage variable, because that seemed more equitable in analysis. We wanted to examine the regular season stats to find out if the team would make it into March Madness or not. We are still working on this analysis, but so far, we've assigned schools' a Postseason status variable, with 0 for if they didn't make it and 1 if they did make it. We plan to use bestglm to find the best model for this. Next we looked at if we could predict how far a school will go in March Madness. This was already done in Deliverer's Q1, but we did some refining for the follow-up investigation; we changed the factor levels so that the further a team went, the higher the number (so the linear regression lines would be more intuitive). We found the best model and made several graphs with Postseason as the response and the best variables as the predictors. Based on the graphs, WinningPercentage, AdjustedOffensiveEfficiency, PowerRating, WinsAboveBubble, and ThreePointShootingPercentage had positive correlations to Postseason; AdjustedDefensiveEfficiency, EffectiveFieldGoalPercentageAllowed, and ThreePointShootingPercentageAllowed had negative correlations; and OffensiveReboundRateAllowed and StealRate had very little correlations. Our next question asked what conference had the most consistent offensive efficiency over the years. It varied heavily across all conferences. Finally, we wanted to take a look at seeding and if more wins over bubble teams correlated to higher seeds in March Madness. We found that the more wins over bubble teams tended to higher seeds in March Madness and inversely the same for more bubble team losses. This was true across all conferences, but more of the power 5 conferences had the most bubble wins. 
