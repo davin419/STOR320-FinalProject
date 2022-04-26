@@ -50,10 +50,25 @@ These variables help judge the strength of a team's  offensive and defensive abi
 	A key variable that helps us answer our first key question is Postseason. Postseason tells us how far the division I college basketball team went in March Madness or the tournament after the regular season. Originally, the variable was given in confusing outputs that would complicate graphs. The outputs ranged from Champions, E8, 2ND, etc. So in order to easily identify how far a team went in the Postseasons, we changed the following outputs: RD68 = 1 (lost the first game), RD64 = 2, RD32 = 3, S16 = 4, E8 = 5, F4 = 6, 2ND = 7, and Champions = 8 (won the tournament). To better understand Postseason, let us look at the relationship between Postseason and Games Won.
 	
 	
-As seen in the figure, the upward sloping line shows the positive correlation between the two variables. In plainer terms, the team that won the tournament in the Postseason would have the most Games Won since they played more games. 
+As seen in the figure, the upward sloping line shows the positive correlation between the two variables. In plainer terms, the team that won the tournament in the Postseason would have the most Games Won since they played more games. Two other key variables are Turnover Rate and Power Rating. Turnover rate is the amount of times a team gives up possesion per 100 possesion. Power Rating is the chance of the team beating an average division I team. 
 
 
 RESULTS:
+Question 1: 
+To answer our first question and determine which conference has the most improvement over the past years, we examined three determinant variables. In our initial questions leading us into our final questions, we found that Winning Percentage, Turnover Rate, and Power Rating were good indicators of the quality of a team. This is why we chose these variables to analyze the improvement of conferences. As a first step, we gathered all of the teams in their respected conference for two different years, 2013 and 2019. It is important to note that we decided to leave out 2020 and 2021 due to COVID implications in the year 2020. A lot of the data for 2020 was incomplete or partially recorded due to seasons being cut short due to the pandemic. Another implication we ran into was the American….
+
+From the two years, 2013 and 2019, we calculated the total average of the three different variables in both years. This allowed us to gauge the differences or improvements. To better understand how substantial these differences were, we then calculated the average percent of increase from 2013 to 2019. Average percent of increase is calculated as follows: new finding - old finding / old finding. By doing so we created three new tables to display the information. We wanted to see what were the largest improvements of conferences, so we listed the top 5 conferences in each table with the largest improvement. 
+
+THREE TABLES 
+
+The first observation we noticed is most of the conferences that were in the top 5 were non power 5 conferences. Non power 5 conferences include the Big 10, the Big 12, ACC, Pac-12, and the SEC. This was alarming to us at first because historically the power 5 conferences are the better teams across most collegiate sports. However, the cause could be quite simple. The power 5 conferences have good numbers in the three variables already with little room to grow. Whereas the smaller conference such as MAC or Mid-American Conference have large areas to approve on as college basketball is becoming more competitive across all conferences. Furthermore, looking at these tables, you may notice turnover rate is ranked by the highest negative number. This is because turnovers are not a positive attribute to a team and will cause negative effects on wins. So by decreasing a team’s turnover rate, the team in turn improves the quality of their team. 
+
+To better illustrate the differences among the top 5 conferences in each variable, we made three different bar graphs to visually show differences. Again, the turnover rate bar graph seems to be upside. However, this is because as previously stated, lowering your turnover rate improves the quality of the team. 
+
+SHOW THREE BAR GRAPHS
+
+
+Question 2: 
 
 
 
