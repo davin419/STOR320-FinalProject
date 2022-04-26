@@ -75,10 +75,10 @@ DATA:
   The data we used was called the “College Basketball Dataset”, which we briefly touched on in the introduction, was retrieved off Kaggle. It contained data from 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, and 2021 Division I college basketball seasons. However, it was originally scraped from the following domain, http://www.barttorvik.com/#. The original data was messy to look at, for reference look at the figure below.
 
 ```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('bball-data.png')
+knitr::include_graphics('basketball.png')
 ```
 
-The owner, Andrew Sunberg, a graduate from Iowa State University thought certain variables were missing and important to add to create the “College Basketball Dataset”. During the cleaning process of the data set the variables POSTSEASON, SEED, and YEAR were added which will be explained later. In doing so there were over 2,450 observations based on 355 unique values for division I college basketball teams after years 2013-2019 were combined. The column labels range from School, Games won, Adjusted Offensive Efficiency, etc. By looking at the descriptive figure below, you can see the data is easier to look at and quickly to identify the most important variables.
+The owner, Andrew Sunberg, a graduate from Iowa State University thought certain variables were missing and important to add to create the “College Basketball Dataset”. During the cleaning process of the data set the variables POSTSEASON, SEED, and YEAR were added which will be explained later. In doing so there were over 2,450 observations based on 355 unique values for division I college basketball teams. The column labels range from School, Games won, Adjusted Offensive Efficiency, etc. By looking at the descriptive figure below, you can see the data is easier to look at and quickly to identify the most important variables.
 
 
 
@@ -92,24 +92,13 @@ Although the descriptive figure showed the key variables, our data set consisted
 
 
 ```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('equations.png')
+knitr::include_graphics('stuff.png')
 ```
 
 
 These variables help judge the strength of a team's  offensive and defensive abilities. These are beneficial as it allows teams to be better compared to each other and the national average for these metrics. 
-	A key variable that helps us answer our first key question is Postseason. Postseason tells us how far the division I college basketball team went in March Madness or the tournament after the regular season. Originally, the variable was given in confusing outputs that would complicate graphs. The outputs ranged from Champions, E8, 2ND, etc. So in order to easily identify how far a team went in the Postseasons, we changed the following outputs: RD68 = 1 (lost the first game), RD64 = 2, RD32 = 3, S16 = 4, E8 = 5, F4 = 6, 2ND = 7, and Champions = 8 (won the tournament). To better understand Postseason, let us look at the relationship between Postseason and Games Won.
+	A key variable that helps us answer our second key question is Postseason. Postseason tells us how far the division I college basketball team went in March Madness or the tournament after the regular season. Originally, the variable was given in confusing outputs that would complicate graphs. The outputs ranged from Champions, E8, 2ND, etc. So in order to easily identify how far a team went in the Postseasons, we changed the following outputs: RD68 = 1 (lost the first game), RD64 = 2, RD32 = 3, S16 = 4, E8 = 5, F4 = 6, 2ND = 7, and Champions = 8 (won the tournament). To better understand Postseason, let us look at the relationship between Postseason and Winning Percenatge.
 	
-	
-As seen in the figure, the upward sloping line shows the positive correlation between the two variables. In plainer terms, the team that won the tournament in the Postseason would have the most Games Won since they played more games. Two other key variables are Turnover Rate and Power Rating. Turnover rate is the amount of times a team gives up possesion per 100 possesion. Power Rating is the chance of the team beating an average division I team. 
-
-
-RESULTS:
-Question 1: 
-To answer our first question and determine which conference has the most improvement over the past years, we examined three determinant variables. In our initial questions leading us into our final questions, we found that Winning Percentage, Turnover Rate, and Power Rating were good indicators of the quality of a team. This is why we chose these variables to analyze the improvement of conferences. As a first step, we gathered all of the teams in their respected conference for two different years, 2013 and 2019. It is important to note that we decided to leave out 2020 and 2021 due to COVID implications in the year 2020. A lot of the data for 2020 was incomplete or partially recorded due to seasons being cut short due to the pandemic. Another implication we ran into was the American….
-
-From the two years, 2013 and 2019, we calculated the total average of the three different variables in both years. This allowed us to gauge the differences or improvements. To better understand how substantial these differences were, we then calculated the average percent of increase from 2013 to 2019. Average percent of increase is calculated as follows: new finding - old finding / old finding. By doing so we created three new tables to display the information. We wanted to see what were the largest improvements of conferences, so we listed the top 5 conferences in each table with the largest improvement. 
-
-THREE TABLES 
 ```{r}
 WinningPostseason <- filter(CBB, !is.na(Postseason)) %>%
 
@@ -151,14 +140,28 @@ DataFigure
 
 
 ```
+	
+	
+	
+	
+As seen in the figure, the upward sloping line shows the positive correlation between the two variables. In plainer terms, the team that won the tournament in the Postseason would have a higher Winning percentage since they had to win more games to make it to the end of the tournament. 
+Some other key variables are Turnover Rate and Power Rating. Turnover rate is the amount of times a team gives up possession per 100 possession. Power Rating is the chance of the team beating an average division I team. 
 
+
+RESULTS:
+Question 1: 
+To answer our first question and determine which conference has had the most improvement over the past years, we examined three determinant variables. In our initial questions leading us into our final questions, we found that Winning Percentage, Turnover Rate, and Power Rating were good indicators of the quality of a team. This is why we chose these variables to analyze the improvement of conferences. As a first step, we gathered all of the teams in their respected conference for two different years, 2013 and 2019. It is important to note that we decided to leave out 2020 and 2021 due to COVID implications in the year 2020. A lot of the data for 2020 was incomplete or partially recorded due to seasons being cut short due to the pandemic. This would cause our data to be incomplete or inaccurate, so excluding such years will prove to make our data more precise. Another implication we ran into was the American….
+
+From the two years, 2013 and 2019, we calculated the total average of the three different variables in both years. This allowed us to gauge the differences or improvements. To better understand how substantial these differences were, we then calculated the average percent of increase from 2013 to 2019. Average percent of increase is calculated as follows: new finding - old finding / old finding. By doing so we created three new tables to display the information. We wanted to see what were the largest improvements of conferences, so we listed the top 5 conferences in each table with the largest improvement. 
+
+
+THREE TABLES 
 
 
 The first observation we noticed is most of the conferences that were in the top 5 were non power 5 conferences. Non power 5 conferences include the Big 10, the Big 12, ACC, Pac-12, and the SEC. This was alarming to us at first because historically the power 5 conferences are the better teams across most collegiate sports. However, the cause could be quite simple. The power 5 conferences have good numbers in the three variables already with little room to grow. Whereas the smaller conference such as MAC or Mid-American Conference have large areas to approve on as college basketball is becoming more competitive across all conferences. Furthermore, looking at these tables, you may notice turnover rate is ranked by the highest negative number. This is because turnovers are not a positive attribute to a team and will cause negative effects on wins. So by decreasing a team’s turnover rate, the team in turn improves the quality of their team. 
 
 To better illustrate the differences among the top 5 conferences in each variable, we made three different bar graphs to visually show differences. Again, the turnover rate bar graph seems to be upside. However, this is because as previously stated, lowering your turnover rate improves the quality of the team. 
 
-SHOW THREE BAR GRAPHS
 ```{r}
 CBB_Conference= CBB %>% mutate(WinningPercentage = GamesWon / GamesPlayed)
 
@@ -219,7 +222,7 @@ ggplot(Top5ChangeWP)+ geom_bar(aes(x= Conference,y=pct_change_wp),stat= "identit
    xlab("Conference") +ylab("Percent Change")+ theme_bw()
 ```
 
-
+MAC is a top 5 team in all three categories or variables. This lead us to believe that the conference that has improved the most over the past years is the MAC or Mid-American Conference. 
 
 Question 2: 
 
@@ -227,4 +230,7 @@ Question 2:
 
 
 CONCLUSION:
+
+In our analysis we wanted to solve two crucial questions about our data involving basketball. Our first inquiry was about which conference has improved the most over the past years. In doing so, we used three determinant variables that we deemed useful in analyzing the quality of a team. Those variables being turnover rate, winning percentage, and power rating. Although skeptical, we were expecting some if not all power 5 conferences to be some of the most improved teams. In our process in finding the percent increase with the respected variables, we found that no power 5 conference was ranked top 5 in any category. Although unusual at first glance, power 5 teams have very good scores in these three variables already. Thus, their room for improvement is very little compared to non power 5 conferences. Yet, with the findings of smaller conferences having large improvements shows that division I college basketball is becoming more competitive across all conferences and not so dominated by a few conferences. To take this analysis even further, one could make a model to predict the trend of improvements for these conferences in the future. This could help shed light on if these historic power 5 conferences could be taken over by different conferences in the future. With just looking at a short fluctuation from 2013 to 2019 but seeing large improvements in these smaller conferences could mean they will continue to improve in the long run.
+
 
