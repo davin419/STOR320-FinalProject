@@ -9,6 +9,8 @@ library(tidyverse)
 library(ggplot2)
 library(leaps)
 library(modelr)
+
+source("https://raw.githubusercontent.com/JA-McLean/STOR455/master/scripts/ShowSubsets.R")
 ```
 
 ```{r}
@@ -53,21 +55,52 @@ q1$Postseason[q1$Postseason == "R32"] <- 3
 q1$Postseason[q1$Postseason == "R64"] <- 2
 q1$Postseason[q1$Postseason == "R68"] <- 1
 
-q1$Postseason = as.factor(as.numeric(q1))
+q1$Postseason = as.integer(as.numeric(q1$Postseason))
+q1$Seed = as.integer(q1$Seed)
 ```
 
-```{r}
-# Cross validation
-set.seed(440)
-q1.cv = q1.min %>% crossv_kfold(10)
-head(q1.cv)
-```
 
 ```{r}
 # All subsets method
-q1.min = select(q1, c(3:23,25)) # Get rid of non-numerical variables
+q1.min = select(q1, c(7:23,25),-20) # Get rid of non-numerical variables and AOE, ADE, Adjusted Tempo
 
-all.mod = regsubsets(Postseason~., data=q1.min, nbest=5)
-summary(all.mod)
+all.mod = regsubsets(Postseason~., data=q1.min, nbest=1)
+all.mod.result = ShowSubsets(all.mod)
+all.mod.result[order(all.mod.result$Cp),]
+```
+
+```{r}
+# Separate into train/test sets with 80% to 20% ratio
+q1.2 = q1 %>%
+        mutate(Set=sample(x=c("Train", "Test"), size=476, replace=TRUE, prob=c(.8,.2)))
+
+train.q1<-filter(q1.2,Set=="Train")
+test.q1<-filter(q1.2,Set=="Test")
+```
+
+```{r}
+#Use models with training set
+lm1 = lm(Postseason~EffectiveFieldGoalPercentageAllowed +
+        OffensiveReboundRateAllowed +
+        FreeThrowRate +
+        FreeThrowRateAllowed +
+        TwoPointShootingPercentageAllowed +
+        ThreePointShootingPercentageAllowed +
+        Seed +
+        WinningPercentage, data=train.q1)
+
+lm2 = lm(Postseason~OffensiveReboundRateAllowed + FreeThrowRateAllowed + Seed + WinningPercentage, data=train.q1)
+lm3 = lm(Postseason~OffensiveReboundRateAllowed + FreeThrowRate + FreeThrowRateAllowed + Seed + WinningPercentage,
+         data=train.q1)
+```
+
+```{r}
+test.q1 = test.q1 %>% 
+      add_predictions(lm1, var="LinMod1") %>%
+      add_predictions(lm2, var="LinMod2") %>%
+      add_predictions(lm3, var="LinMod3") %>%
+      add_residuals(lm1, var="LinRes1") %>%
+      add_residuals(lm2, var="LinRes2") %>%
+      add_residuals(lm3, var="LinRes3")
 ```
 
