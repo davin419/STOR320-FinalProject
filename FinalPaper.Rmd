@@ -11,6 +11,56 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse) 
 library(readr)
 library(modelr)
+library(ggplot2)
+library(ggthemes)
+library(leaps)
+
+source("https://raw.githubusercontent.com/JA-McLean/STOR455/master/scripts/ShowSubsets.R")
+```
+
+```{r}
+# Data setup
+CBB = read_csv("cbb.csv")
+CBB <- CBB %>% 
+  rename(School=TEAM) %>% 
+  rename(Conference=CONF) %>% 
+  rename(GamesPlayed = G) %>% 
+  rename(GamesWon = W) %>% 
+  rename(AdjustedOffensiveEfficiency=ADJOE) %>% 
+  rename(AdjustedDefensiveEfficiency=ADJDE) %>% 
+  rename(PowerRating = BARTHAG) %>% 
+  rename(EffectiveFieldGoalPercentageShot=EFG_O) %>% 
+  rename(EffectiveFieldGoalPercentageAllowed=EFG_D) %>% 
+  rename(TurnoverRate=TOR) %>% 
+  rename(StealRate=TORD) %>% 
+  rename(OffensiveReboundRate=ORB) %>% 
+  rename(OffensiveReboundRateAllowed=DRB) %>% 
+  rename(FreeThrowRate=FTR) %>%
+  rename(FreeThrowRateAllowed = FTRD) %>% 
+  rename(TwoPointShootingPercentage = "2P_O") %>% 
+  rename(TwoPointShootingPercentageAllowed='2P_D') %>% 
+  rename(ThreePointShootingPercentage='3P_O') %>% 
+  rename(ThreePointShootingPercentageAllowed='3P_D') %>% 
+  rename(AdjustedTempo=ADJ_T) %>% 
+  rename(WinsAboveBubble=WAB) %>% 
+  rename(Postseason=POSTSEASON) %>% 
+  rename(Seed=SEED) %>% 
+  rename(Season=YEAR)
+
+q1 <- filter(CBB, !is.na(Postseason)) %>% 
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+q1$Postseason[q1$Postseason == "Champions"] <- 8
+q1$Postseason[q1$Postseason == "2ND"] <- 7
+q1$Postseason[q1$Postseason == "F4"] <- 6
+q1$Postseason[q1$Postseason == "E8"] <- 5
+q1$Postseason[q1$Postseason == "S16"] <- 4
+q1$Postseason[q1$Postseason == "R32"] <- 3
+q1$Postseason[q1$Postseason == "R64"] <- 2
+q1$Postseason[q1$Postseason == "R68"] <- 1
+
+q1$Postseason = as.integer(as.numeric(q1$Postseason))
+q1$Seed = as.integer(q1$Seed)
 ```
 
 Introduction: 
@@ -60,12 +110,115 @@ To answer our first question and determine which conference has the most improve
 From the two years, 2013 and 2019, we calculated the total average of the three different variables in both years. This allowed us to gauge the differences or improvements. To better understand how substantial these differences were, we then calculated the average percent of increase from 2013 to 2019. Average percent of increase is calculated as follows: new finding - old finding / old finding. By doing so we created three new tables to display the information. We wanted to see what were the largest improvements of conferences, so we listed the top 5 conferences in each table with the largest improvement. 
 
 THREE TABLES 
+```{r}
+WinningPostseason <- filter(CBB, !is.na(Postseason)) %>%
+
+  mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+ 
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "Champions"] <- 8
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "2ND"] <- 7
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "F4"] <- 6
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "E8"] <- 5
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "S16"] <-4
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "R32"] <- 3
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "R64"] <- 2
+
+WinningPostseason$Postseason[WinningPostseason$Postseason == "R68"] <- 1
+
+ 
+
+WinningPostseason$Postseason= as.numeric(WinningPostseason$Postseason)
+
+ 
+
+DataFigure<-ggplot(WinningPostseason, aes(x=Postseason, y= WinningPercentage)) +
+
+    geom_point() +
+
+  geom_smooth(method=lm, se=FALSE) + ggtitle("Correlation Between Winning Percentage and Postseason")+
+
+   xlab("Postseason") +ylab("Winning Percentage") + theme_economist()
+
+DataFigure
+
+
+```
+
+
 
 The first observation we noticed is most of the conferences that were in the top 5 were non power 5 conferences. Non power 5 conferences include the Big 10, the Big 12, ACC, Pac-12, and the SEC. This was alarming to us at first because historically the power 5 conferences are the better teams across most collegiate sports. However, the cause could be quite simple. The power 5 conferences have good numbers in the three variables already with little room to grow. Whereas the smaller conference such as MAC or Mid-American Conference have large areas to approve on as college basketball is becoming more competitive across all conferences. Furthermore, looking at these tables, you may notice turnover rate is ranked by the highest negative number. This is because turnovers are not a positive attribute to a team and will cause negative effects on wins. So by decreasing a team’s turnover rate, the team in turn improves the quality of their team. 
 
 To better illustrate the differences among the top 5 conferences in each variable, we made three different bar graphs to visually show differences. Again, the turnover rate bar graph seems to be upside. However, this is because as previously stated, lowering your turnover rate improves the quality of the team. 
 
 SHOW THREE BAR GRAPHS
+```{r}
+CBB_Conference= CBB %>% mutate(WinningPercentage = GamesWon / GamesPlayed)
+
+CBB_Conference2= CBB_Conference %>% group_by(Conference, Season)
+
+CBB_Conference3 = CBB_Conference2 %>% summarise(AverageTOR= mean(TurnoverRate),AveragePR= mean(PowerRating),AverageWP=mean(WinningPercentage)) %>% filter(Season %in% c(2013,2019))
+
+ 
+
+ 
+
+Percentchange= CBB_Conference3 %>% mutate(pct_change_tor = ((AverageTOR/lag(AverageTOR) - 1) * 100)) %>% mutate(pct_change_pr = ((AveragePR/lag(AveragePR) - 1) * 100)) %>% mutate(pct_change_wp = ((AverageWP/lag(AverageWP) - 1) * 100))
+
+ 
+
+ 
+
+PercentChangeTOR= Percentchange[order(Percentchange$pct_change_tor),] %>% select(Conference, pct_change_tor)
+
+Top5ChangeTOR= head(PercentChangeTOR,5)
+
+ 
+
+PercentChangePR= Percentchange[order(-Percentchange$pct_change_pr),] %>% select(Conference, pct_change_pr)
+
+Top5ChangePR= head(PercentChangePR,5)
+
+ 
+
+PercentChangeWP= Percentchange[order(-Percentchange$pct_change_wp),] %>% select(Conference, pct_change_wp)
+
+Top5ChangeWP=head(PercentChangeWP,5)
+
+ 
+
+Top5ChangeTOR$Conference=factor(Top5ChangeTOR$Conference,levels= Top5ChangeTOR$Conference[order(Top5ChangeTOR$pct_change_tor, decreasing=FALSE)])
+
+ggplot(Top5ChangeTOR)+ geom_bar(aes(x= Conference,y=pct_change_tor),stat= "identity") + ggtitle("Conferences With The Highest Percent Decrease In TOR ")+
+
+   xlab("Conference") +ylab("Percent Change")+ theme_bw()
+
+ 
+
+Top5ChangePR$Conference=factor(Top5ChangePR$Conference,levels= Top5ChangePR$Conference[order(Top5ChangePR$pct_change_pr, decreasing=TRUE)])
+
+ggplot(Top5ChangePR)+ geom_bar(aes(x= Conference,y=pct_change_pr),stat= "identity")+ ggtitle("Conferences With The Highest Percent Increase in PR")+
+
+   xlab("Conference") +ylab("Percent Change")+theme_bw()
+
+ 
+
+Top5ChangeWP$Conference=factor(Top5ChangeWP$Conference,levels= Top5ChangeWP$Conference[order(Top5ChangeWP$pct_change_wp, decreasing=TRUE)])
+
+ggplot(Top5ChangeWP)+ geom_bar(aes(x= Conference,y=pct_change_wp),stat= "identity")+
+
+  ggtitle("Conferences With The Highest Percent Increase in WP")+
+
+   xlab("Conference") +ylab("Percent Change")+ theme_bw()
+```
+
 
 
 Question 2: 
