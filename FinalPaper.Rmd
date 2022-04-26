@@ -1,19 +1,62 @@
 ---
 title: "Final"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
-```{r}
-plot(cars)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse) 
+library(readr)
+library(modelr)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+Introduction: 
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+Being in a college like UNC, it is almost impossible not to love the UNC Basketball team. That being said, when March Madness is finally upon us and it’s time to create our brackets, everybody wants to create the best bracket they can; however, they never really know where to begin. That’s where our dataset comes in. The “College Basketball Dataset” is originally from http://www.barttorvik.com/#, but has been created and cleaned on Kaggle by owner Andrew Sundberg contains data on college basketball from the years 2013 through 2021. 
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+Our analysis focuses on the central theme of the best predictors in college basketball. Our first question focuses on different conferences in college basketball and on average which of these conferences have improved based off of three metrics: the power rating, the turnover rate, and the winning percentage. This question helps us understand which conference is “best” since there is always an ongoing debate on which conferences should be considered the “power five conferences”. Typically power five is considered as ACC, Big 10, Big12, Pac 12, and SEC. Although the teams within this conference may see higher efficiencies, they may not experience as much growth. However, Determining the conferences that excelled the best in these metrics will help with predictions later on as well as understanding how talent within a conference changes over time. 
+
+Our second question focuses more on whether or not we could predict how far a school will go in the NCAA. It is a question that many would be interested in since everybody wants their March Madness brackets to be the best and our analysis would help them see what would count as the best predictors in the same. The odds of a perfect bracket being 1 in 9.2 quintillion and upsets are almost luck-based when it comes to predictions. However through data analysis and trends it is possible to predict upsets, final four teams, and other categories improving a bracket. The information in this data set allows our group to answer questions based around improvements and tournament predictions. 
+
+DATA: 
+  The data we used was called the “College Basketball Dataset”, which we briefly touched on in the introduction, was retrieved off Kaggle. It contained data from 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, and 2021 Division I college basketball seasons. However, it was originally scraped from the following domain, http://www.barttorvik.com/#. The original data was messy to look at, for reference look at the figure below.
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('bball-data.png')
+```
+
+The owner, Andrew Sunberg, a graduate from Iowa State University thought certain variables were missing and important to add to create the “College Basketball Dataset”. During the cleaning process of the data set the variables POSTSEASON, SEED, and YEAR were added which will be explained later. In doing so there were over 2,450 observations based on 355 unique values for division I college basketball teams after years 2013-2019 were combined. The column labels range from School, Games won, Adjusted Offensive Efficiency, etc. By looking at the descriptive figure below, you can see the data is easier to look at and quickly to identify the most important variables.
+
+
+
+
+
+
+
+
+
+Although the descriptive figure showed the key variables, our data set consisted of 24 total variables. One of the key variables is “Winning Percentage”. To calculate Winning Percentage, you have to look at the two other variables that go into the calculation. That is Games Played and Games Won. Games Played is the total number of games they competed in throughout the season no matter the result of the game. Whereas Game Won is the total number of games that the team competed in and won. It is important to note that Games Played and Games Won include not only the regular season but Postseason as well. Postseason is the games during the tournament played after the regular season. Two other key variables are “AdjustedOffensiveEfficiency” (AOE) and “AdjustedDefensiveEfficiency” (ADE).  To understand what these variables calculate we need to look at how they are calculated. Offensive Efficiency is calculated by using 100*(Points Scored/Possessions), and Defensive Efficiency is calculated through 100*(Points allowed/ possessions). These are used to calculate AOE and ADE which are calculated as seen below:
+
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('equations.png')
+```
+
+
+These variables help judge the strength of a team's  offensive and defensive abilities. These are beneficial as it allows teams to be better compared to each other and the national average for these metrics. 
+	A key variable that helps us answer our first key question is Postseason. Postseason tells us how far the division I college basketball team went in March Madness or the tournament after the regular season. Originally, the variable was given in confusing outputs that would complicate graphs. The outputs ranged from Champions, E8, 2ND, etc. So in order to easily identify how far a team went in the Postseasons, we changed the following outputs: RD68 = 1 (lost the first game), RD64 = 2, RD32 = 3, S16 = 4, E8 = 5, F4 = 6, 2ND = 7, and Champions = 8 (won the tournament). To better understand Postseason, let us look at the relationship between Postseason and Games Won.
+	
+	
+As seen in the figure, the upward sloping line shows the positive correlation between the two variables. In plainer terms, the team that won the tournament in the Postseason would have the most Games Won since they played more games. 
+
+
+RESULTS:
+
+
+
+
+CONCLUSION:
 
