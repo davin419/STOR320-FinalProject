@@ -65,7 +65,7 @@ q1$Seed = as.integer(q1$Seed)
 
 # INTRODUCTION: 
 
-Being in a college like UNC, it is almost impossible not to love the UNC Basketball team. That being said, when March Madness is finally upon us and it’s time to create our brackets, everybody wants to create the best bracket they can; however, they never really know where to begin. That’s where our dataset comes in. The “College Basketball Dataset” is originally from http://www.barttorvik.com/#, but has been created and cleaned on Kaggle by owner Andrew Sundberg contains data on college basketball from the years 2013 through 2021. 
+Being in a college like UNC, it is almost impossible not to love the UNC Basketball team. That being said, when March Madness is finally upon us and it’s time to create our brackets, everybody wants to create the best bracket they can; however, they never really know where to begin. That’s where our analysis comes in.
 
 Our analysis focuses on the central theme of the best predictors in college basketball. Our first question focuses on different conferences in college basketball and on average which of these conferences have improved based off of three metrics: the power rating, the turnover rate, and the winning percentage. This question helps us understand which conference is “best” since there is always an ongoing debate on which conferences should be considered the “power five conferences”. Typically power five is considered as ACC, Big 10, Big12, Pac 12, and SEC. Although the teams within this conference may see higher efficiencies, they may not experience as much growth. However, Determining the conferences that excelled the best in these metrics will help with predictions later on as well as understanding how talent within a conference changes over time. 
 
@@ -88,18 +88,17 @@ The owner, Andrew Sunberg, a graduate from Iowa State University thought certain
 
 
 
-Although the descriptive figure showed the key variables, our data set consisted of 24 total variables. One of the key variables is “Winning Percentage”. To calculate Winning Percentage, you have to look at the two other variables that go into the calculation. That is Games Played and Games Won. Games Played is the total number of games they competed in throughout the season no matter the result of the game. Whereas Game Won is the total number of games that the team competed in and won. It is important to note that Games Played and Games Won include not only the regular season but Postseason as well. Postseason is the games during the tournament played after the regular season. Two other key variables are “AdjustedOffensiveEfficiency” (AOE) and “AdjustedDefensiveEfficiency” (ADE).  To understand what these variables calculate we need to look at how they are calculated. Offensive Efficiency is calculated by using 100*(Points Scored/Possessions), and Defensive Efficiency is calculated through 100*(Points allowed/ possessions). These are used to calculate AOE and ADE which are calculated as seen below:
+Although the descriptive figure showed the key variables, our data set consisted of 24 total variables. One of the key variables is “Winning Percentage”. To calculate Winning Percentage, you have to look at the two other variables that go into the calculation. That is Games Played and Games Won. Games Played is the total number of games they competed in throughout the season no matter the result of the game. Whereas Game Won is the total number of games that the team competed in and won. It is important to note that Games Played and Games Won include not only the regular season but Postseason as well. Postseason is the games during the tournament played after the regular season. Two other key variables are “AdjustedOffensiveEfficiency” (AOE) and “AdjustedDefensiveEfficiency” (ADE).  To understand what these variables calculate we need to look at how they are calculated. Offensive Efficiency is calculated by using 100\*(Points Scored/Possessions), and Defensive Efficiency is calculated through 100\*(Points allowed/ possessions). These are used to calculate AOE and ADE which are calculated as seen below:
 
-
-```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('stuff.png')
-```
+$$Offensive Efficiency = 100 * \frac{Points Scored}{Posessions}$$
+$$Defensive Efficiency = 100 * \frac{Points Allowed}{Posessions}$$
+$$ADE = \frac{Defensive Efficiency * National Avg D1 Defensive Efficiency}{National Avg D1 Offensive Efficiency}$$
 
 
 These variables help judge the strength of a team's  offensive and defensive abilities. These are beneficial as it allows teams to be better compared to each other and the national average for these metrics. 
 	A key variable that helps us answer our second key question is Postseason. Postseason tells us how far the division I college basketball team went in March Madness or the tournament after the regular season. Originally, the variable was given in confusing outputs that would complicate graphs. The outputs ranged from Champions, E8, 2ND, etc. So in order to easily identify how far a team went in the Postseasons, we changed the following outputs: RD68 = 1 (lost the first game), RD64 = 2, RD32 = 3, S16 = 4, E8 = 5, F4 = 6, 2ND = 7, and Champions = 8 (won the tournament). To better understand Postseason, let us look at the relationship between Postseason and Winning Percenatge.
 	
-```{r}
+```{r, echo=F, message=F, warning=F}
 WinningPostseason <- filter(CBB, !is.na(Postseason)) %>%
 
   mutate(WinningPercentage = GamesWon / GamesPlayed)
@@ -132,7 +131,7 @@ DataFigure<-ggplot(WinningPostseason, aes(x=Postseason, y= WinningPercentage)) +
 
     geom_point() +
 
-  geom_smooth(method=lm, se=FALSE) + ggtitle("Correlation Between Winning Percentage and Postseason")+
+  geom_smooth(formula = y~x, method=lm, se=FALSE) + ggtitle("Correlation Between Winning Percentage and Postseason")+
 
    xlab("Postseason") +ylab("Winning Percentage") + theme_economist()
 
