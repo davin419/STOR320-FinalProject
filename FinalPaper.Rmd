@@ -227,7 +227,61 @@ MAC is a top 5 team in all three categories or variables. This lead us to believ
 
 Our next question attempts to answer as to whether we are able to effectively predict how far a team would be able to go in the Postseason tournament given their stats. We first split the data through random sampling into 80% train sets and 20% test sets. Then we built linear models to predict how far a team goes in the Postseason using a combination of predictors. To determine what were the best predictors, we used Best Subsets Regression, utilizing the regsubsets function within the leaps package. This function helps us find linear models with the least Mallow's Cp. Mallow's Cp is a method to compare the full model to smaller models with the best subsets of predictors, with a lower value indicating a better model as it suggests smaller amounts of unexplained error. 
 
+Given a smaller dataset that did not include non-numerical variables, along with AOE and ADE as they are included within Power Rating, the best model found was Postseason = EffectiveFieldGoalPercentageAllowed + OffensiveReboundRateAllowed + FreeThrowRate + FreeThrowRateAllowed + TwoPointShootingPercentageAllowed + ThreePointShootingPercentageAllowed + Seed + WinningPercentage. This model gave the lowest Mallow's Cp of 8.12. The next best model given with 4 predictors is Postseason = OffensiveReboundRateAllowed + FreeThrowRateAllowed + Seed + Winning Percentage with a Mallow's Cp of 8.41. The third best model is Postseason = OffensiveReboundRateAllowed + FreeThrowRate + FreeThrowRateAllowed + Seed + WinningPercentage with a Mallow's Cp of 8.64. 
 
+With the best three models, we then went to see how accurate they performed. Using the test data, we plotted the linear models with their predicted Postseason value against the actual Postseason value. From the figure below, we have the black line representing a perfect fit with the three linear regression lines.
+
+```{r, echo=F, warning=F}
+# All subsets method
+q1.min = select(q1, c(7:23,25),-20) # Get rid of non-numerical variables and AOE, ADE, Adjusted Tempo
+
+all.mod = regsubsets(Postseason~., data=q1.min, nbest=1)
+all.mod.result = ShowSubsets(all.mod)
+
+# Separate into train/test sets with 80% to 20% ratio
+q1.2 = q1 %>%
+        mutate(Set=sample(x=c("Train", "Test"), size=476, replace=TRUE, prob=c(.8,.2)))
+
+train.q1<-filter(q1.2,Set=="Train")
+test.q1<-filter(q1.2,Set=="Test")
+
+#Use models with training set
+lm1 = lm(Postseason~EffectiveFieldGoalPercentageAllowed +
+        OffensiveReboundRateAllowed +
+        FreeThrowRate +
+        FreeThrowRateAllowed +
+        TwoPointShootingPercentageAllowed +
+        ThreePointShootingPercentageAllowed +
+        Seed +
+        WinningPercentage, data=train.q1)
+
+lm2 = lm(Postseason~OffensiveReboundRateAllowed + FreeThrowRateAllowed + Seed + WinningPercentage, data=train.q1)
+lm3 = lm(Postseason~OffensiveReboundRateAllowed + FreeThrowRate + FreeThrowRateAllowed + Seed + WinningPercentage,
+         data=train.q1)
+
+test.q1 = test.q1 %>% 
+      add_predictions(lm1, var="LinMod1") %>%
+      add_predictions(lm2, var="LinMod2") %>%
+      add_predictions(lm3, var="LinMod3") %>%
+      add_residuals(lm1, var="LinRes1") %>%
+      add_residuals(lm2, var="LinRes2") %>%
+      add_residuals(lm3, var="LinRes3")
+
+compare.models <- test.q1 %>% 
+  gather(27:29, key="Model", value="ModelPrediction", factor_key=T)
+
+compare.models <- compare.models %>% 
+  gather(27:29, key="Residual", value="ResidualPrediction", factor_key=T)
+
+# Actual vs. fitted with all 3 models. The line represents a perfect fit.
+ggplot(compare.models, aes(x=Postseason, y=ModelPrediction, color=Model)) +
+  geom_point() + geom_smooth(method="lm") +
+  geom_abline(slope=1, intercept=0, size=1) +
+  xlab("Actual Postseason Status") + ylab("Fitted Postseason Status") +
+  ggtitle("Prediction of Postseason of Linear Models") +
+  theme_minimal()
+```
+Based on the figure, we see that the three models are very similar due to the proximity of their trend lines. We see there is some success, particularly around the middle where it seems to hit close to center of the distributions of each Postseason status, however we see at later rounds, the models are no longer that accurate predicting. One big reason may be attributed to the lack of data for teams that reached round 6 and beyond, and therefore the models are highly skewed for the earlier rounds. So while these models may have some correlation to predict Postseason status, especially in the earlier rounds, these models may not be the most accurate and may require additional methods to determine better predictors for better accuracy.
 
 # CONCLUSION:
 
